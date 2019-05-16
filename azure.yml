@@ -74,7 +74,7 @@
       ssh_password_enabled: false
       ssh_public_keys:
         - path: /home/azureuser/.ssh/authorized_keys
-          key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9Th5LTxKQtIYWuVWrhKFdzqV5DD8s0wmaENn8KuFNVUPkFzo4vSMN/nBflgtVlyjpFvVcaCbAiahSDMnWUnpjy3mLP41qLmYSMWiDQ/FN33F1DE3IAyhEAF4s8UDqhaau96y2txDdh0I2Qt1ZdRG9qp51ftkOvO/FYJ3gSzsciDXC23Mo69L3yJXJrXPa+b7A3ywKL1uLunjbq5rB5imOyUQ7OGt0nFvBygVUMoKRCmAKdgn0WEtDAZLZK9TlVf8mwBJST65UX8Q5wR8Q+95TRB1lTfmvIo6r3tr7SuD5t81/qEWlFQqHZENwkzjU4t+Lgw01GB4vR2X0dqtP+Bxv" 
+          key_data: "ssh-rsa AAAAB3NABAAABAQC9Th5LTxKQtIYWuVWrhKFdzqV5DD8s0wmaENn8KuFNVUPkFzo4vSMN/nBflgtVlyjpFvVcaCbAiahSDMnWUnpjy3mLP41qLmYSMWiDQ/FN33F1DE3IAyhEAF4s8UDqhaau96y2txDdh0I2Qt1ZdRG9qp51ftkOvO/FYJ3gSzsciDXC23Mo69L3yJXJrXPa+b7A3ywKL1uLunjbq5rB5imOyUQ7OGt0nFvBygVUMoKRCmAKdgn0WEtDAZLZK9TlVf8mwBJST65UX8Q5wR8Q+95TRB1lTfmvIo6r3tr7SuD5t81/qEWlFQqHZENwkzjU4t+Lgw01GB4vR2X0dqtP+Bxv" 
       storage_account: testaccount001 
       network_interfaces: myNIC
       custom_data: "{{ lookup('file', 'cloud-init.sh') }}" 
