@@ -1,0 +1,39 @@
+- name: Delete Azure VM
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: remove vm and all resources except public ips
+    azure_rm_virtualmachine:
+      resource_group: myResourceGroup
+      name: myVM
+      state: absent
+
+  - name: delete Network Security Group that allows SSH
+    azure_rm_securitygroup:
+      resource_group: myResourceGroup
+      name: myNetworkSecurityGroup
+      state: absent
+
+  - name: delete subnet
+    azure_rm_subnet:
+      resource_group: myResourceGroup
+      name: mySubnet
+      virtual_network: myVnet
+      state: absent
+
+  - name: delete virtual network
+    azure_rm_virtualnetwork:
+      resource_group: myResourceGroup
+      name: myVnet
+      state: absent
+
+  - name: remove storage account
+    azure_rm_storageaccount:
+      resource_group: myResourceGroup 
+      name: testaccount001
+      state: absent
+
+  - name: Delete a resource group
+    azure_rm_resourcegroup:
+      name: myResourceGroup
+      state: absent

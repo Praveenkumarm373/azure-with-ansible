@@ -1,0 +1,95 @@
+- name: Create Azure VM
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Create resource group
+    azure_rm_resourcegroup:
+      name: myResourceGroup
+      location: eastus
+
+  - name: Create storage account
+    azure_rm_storageaccount:
+      resource_group: myResourceGroup
+      name: testaccount001
+      account_type: Standard_LRS
+
+  - name: Create virtual network
+    azure_rm_virtualnetwork:
+      resource_group: myResourceGroup
+      name: myVnet
+      address_prefixes: "10.0.0.0/16"
+
+  - name: Add subnet
+    azure_rm_subnet:
+      resource_group: myResourceGroup
+      name: mySubnet
+      address_prefix: "10.0.1.0/24"
+      virtual_network: myVnet
+
+  - name: Create public IP address
+    azure_rm_publicipaddress:
+      resource_group: myResourceGroup
+      allocation_method: Static
+      name: myPublicIP
+    register: output_ip_address
+
+  - name: Dump public IP for VM which will be created
+#    debug:
+#      msg: "The public IP is {{ output_ip_address.state.ip_address }}."
+#    register: output
+#  - name: Dump public IP
+    local_action: copy content={{ output_ip_address.state.ip_address}} dest=/etc/ansible/azurehost
+
+  - name: Create Network Security Group that allows SSH
+    azure_rm_securitygroup:
+      resource_group: myResourceGroup
+      name: myNetworkSecurityGroup
+      rules:
+        - name: SSH
+          protocol: Tcp
+          destination_port_range: 22
+          access: Allow
+          priority: 101
+          direction: Inbound
+        - name: HTTP
+          protocol: Tcp
+          destination_port_range: 80
+          access: Allow
+          priority: 1001
+          direction: Inbound
+
+  - name: Create virtual network inteface card
+    azure_rm_networkinterface:
+      resource_group: myResourceGroup
+      name: myNIC
+      virtual_network: myVnet
+      subnet: mySubnet
+      public_ip_name: myPublicIP
+      security_group: myNetworkSecurityGroup
+
+  - name: Create VM
+    azure_rm_virtualmachine:
+      resource_group: myResourceGroup
+      name: myVM
+      vm_size: Standard_DS1_v2
+      admin_username: azureuser
+      ssh_password_enabled: false
+      ssh_public_keys:
+        - path: /home/azureuser/.ssh/authorized_keys
+          key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9Th5LTxKQtIYWuVWrhKFdzqV5DD8s0wmaENn8KuFNVUPkFzo4vSMN/nBflgtVlyjpFvVcaCbAiahSDMnWUnpjy3mLP41qLmYSMWiDQ/FN33F1DE3IAyhEAF4s8UDqhaau96y2txDdh0I2Qt1ZdRG9qp51ftkOvO/FYJ3gSzsciDXC23Mo69L3yJXJrXPa+b7A3ywKL1uLunjbq5rB5imOyUQ7OGt0nFvBygVUMoKRCmAKdgn0WEtDAZLZK9TlVf8mwBJST65UX8Q5wR8Q+95TRB1lTfmvIo6r3tr7SuD5t81/qEWlFQqHZENwkzjU4t+Lgw01GB4vR2X0dqtP+Bxv" 
+      storage_account: testaccount001 
+      network_interfaces: myNIC
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.1'
+        version: latest 
+
+  - name: editing the azhost1
+    shell: "echo ' ansible_ssh_user=azureuser' >>/etc/ansible/azurehost"
+
+  - name: editing the azhost2
+    lineinfile:
+      path: /etc/ansible/azurehost
+      line: '[server]'
+      insertbefore: BOF
